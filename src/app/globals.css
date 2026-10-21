@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #F9F8F5;
+  --text: #16171A;
+  --muted: #6B6E77;
+  --border: #E5E3DC;
+  --accent: #8C6D37;
+  --card-bg: #FFFFFF;
+
+  /* CHẾ ĐỘ ĐỌC CHO GIAO DIỆN SÁNG (LIGHT MODE) */
+  --reader-bg-center: rgba(249, 248, 245, 0.94);
+  --reader-bg-edge: rgba(232, 228, 219, 0.98);
+  --reader-vignette-outer: rgba(160, 154, 140, 0.35);
+  --reader-title: #16171A;
+  --reader-text: #2C2E35;
+  --reader-border: rgba(22, 23, 26, 0.1);
+}
+
+.dark {
+  --bg: #0F1012;
+  --text: #ECEBE8;
+  --muted: #838690;
+  --border: #232529;
+  --accent: #C5A059;
+  --card-bg: #141619;
+
+  /* CHẾ ĐỘ ĐỌC CHO GIAO DIỆN TỐI (DARK MODE) */
+  --reader-bg-center: rgba(15, 17, 21, 0.93);
+  --reader-bg-edge: rgba(6, 7, 9, 0.98);
+  --reader-vignette-outer: rgba(0, 0, 0, 0.75);
+  --reader-title: #F4F2EC;
+  --reader-text: #D8D6CF;
+  --reader-border: rgba(255, 255, 255, 0.1);
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-inter), -apple-system, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.border-subtle {
+  border-color: var(--border);
+}
+
+/* NỀN ĐỌC BIẾN THIÊN THEO MODE: BLUR 28PX & RADIAL VIGNETTE TƯƠNG ỨNG */
+.reader-backdrop {
+  background: radial-gradient(
+    ellipse at 50% 30%,
+    var(--reader-bg-center) 0%,
+    var(--reader-bg-edge) 100%
+  );
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+}

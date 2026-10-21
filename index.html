@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>thetalkofthomas</title>
+  
+  <!-- 2 font: Cormorant Garamond cho tiêu đề, Inter cho nội dung -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['"Inter"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --bg: #F9F8F5;
+      --text: #16171A;
+      --muted: #6B6E77;
+      --border: #E5E3DC;
+      --accent: #8C6D37;
+      --reader-bg: rgba(249, 248, 245, 0.98);
+    }
+
+    html.dark {
+      --bg: #0F1012;
+      --text: #ECEBE8;
+      --muted: #838690;
+      --border: #232529;
+      --accent: #C5A059;
+      --reader-bg: rgba(15, 16, 18, 0.98);
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    ::selection {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    /* CHẾ ĐỘ ĐỌC BIẾN THIÊN: TRẮNG KHI LIGHT, ĐEN KHI DARK */
+    :root {
+      --reader-bg-center: rgba(249, 248, 245, 0.94);
+      --reader-bg-edge: rgba(232, 228, 219, 0.98);
+      --reader-vignette-outer: rgba(160, 154, 140, 0.35);
+      --reader-title: #16171A;
+      --reader-text: #2C2E35;
+      --reader-border: rgba(22, 23, 26, 0.1);
+    }
+
+    html.dark {
+      --reader-bg-center: rgba(15, 17, 21, 0.93);
+      --reader-bg-edge: rgba(6, 7, 9, 0.98);
+      --reader-vignette-outer: rgba(0, 0, 0, 0.75);
+      --reader-title: #F4F2EC;
+      --reader-text: #D8D6CF;
+      --reader-border: rgba(255, 255, 255, 0.1);
+    }
+
+    .reader-backdrop {
+      background: radial-gradient(
+        ellipse at 50% 30%,
+        var(--reader-bg-center) 0%,
+        var(--reader-bg-edge) 100%
+      );
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+    }
+  </style>
+</head>
+<body class="font-sans antialiased min-h-screen flex flex-col justify-between">
+
+  <!-- ============================================================== -->
+  <!-- HEADER: TỰ NHIÊN, KHÔNG ALL-CAPS, KHÔNG HUY HIỆU               -->
+  <!-- ============================================================== -->
+  <header class="w-full border-b border-subtle">
+    <div class="max-w-5xl mx-auto px-6 sm:px-10 h-20 flex items-center justify-between">
+      
+      <!-- LOGO: Biểu tượng triện bespoke kết hợp Typographic lockup -->
+      <a href="#" class="group flex items-center gap-3.5">
+        <div class="w-9 h-9 rounded-[3px] border border-[var(--border)] group-hover:border-[var(--accent)] flex items-center justify-center transition-all duration-300 relative bg-[var(--card-bg)] shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+          <svg class="w-5 h-5 text-[var(--accent)] transition-transform duration-300 group-hover:scale-105" viewBox="0 0 24 24" fill="none">
+            <path d="M4 7h16M12 7v13M8 20h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+            <path d="M7 11h10M12 11v6" stroke="currentColor" stroke-width="1" stroke-opacity="0.4" stroke-linecap="square" />
+          </svg>
+        </div>
+
+        <div class="flex items-baseline gap-1.5 font-serif text-2xl sm:text-[25px] tracking-[-0.025em] text-[var(--text)] select-none">
+          <span class="font-medium group-hover:text-[var(--accent)] transition-colors">The Talk</span>
+          <span class="font-serif italic font-light text-xl text-[var(--accent)] transition-opacity">of</span>
+          <span class="font-medium group-hover:text-[var(--accent)] transition-colors">Thomas</span>
+        </div>
+      </a>
+
+      <div class="flex items-center gap-6 sm:gap-8 text-sm">
+        <nav class="flex items-center gap-6 text-[var(--muted)]">
+          <a href="#articles" class="hover:text-[var(--text)] transition-colors">Bài viết</a>
+          <a href="#about" class="hover:text-[var(--text)] transition-colors">Giới thiệu</a>
+          <a href="#newsletter" class="hover:text-[var(--text)] transition-colors">Bản tin</a>
+        </nav>
+
+        <button 
+          onclick="toggleTheme()" 
+          class="text-xs text-[var(--muted)] hover:text-[var(--text)] px-2.5 py-1 rounded border border-subtle transition-colors"
+        >
+          <span id="theme-btn-text">Giao diện tối</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow">
+    <!-- ============================================================== -->
+    <!-- HERO: KHÔNG CÓ KICKER/EYEBROW, KHÔNG CÓ //, KHÔNG STAT BAR     -->
+    <!-- ============================================================== -->
+    <section class="max-w-5xl mx-auto px-6 sm:px-10 pt-20 pb-16 sm:pt-28 sm:pb-24">
+      <h1 class="font-serif text-5xl sm:text-7xl font-normal tracking-tight text-[var(--text)] leading-[1.08] mb-6">
+        Tĩnh lặng giữa hỗn loạn.
+      </h1>
+
+      <p class="text-[var(--muted)] text-lg sm:text-xl font-normal leading-relaxed max-w-2xl">
+        Ghi chép của Thomas về tư duy chiến lược, sự nghiệp và kỷ luật tự thân trong một thế giới quá nhiều tiếng ồn.
+      </p>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- DANH SÁCH BÀI VIẾT: BỐ CỤC TỰ NHIÊN, KHÔNG ÉP ALL-CAPS          -->
+    <!-- ============================================================== -->
+    <section id="articles" class="max-w-5xl mx-auto px-6 sm:px-10 py-12 border-t border-subtle">
+      
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
+        
+        <!-- Cột trái: Bộ lọc đơn giản -->
+        <div class="md:col-span-3 space-y-4">
+          <h2 class="text-sm font-medium text-[var(--text)]">Bài viết</h2>
+          <div class="flex flex-wrap md:flex-col gap-2 text-sm text-[var(--muted)]">
+            <button onclick="filterCategory('all')" class="cat-btn font-medium text-[var(--text)] text-left" data-cat="all">
+              Tất cả
+            </button>
+            <button onclick="filterCategory('strategy')" class="cat-btn hover:text-[var(--text)] text-left" data-cat="strategy">
+              Chiến lược
+            </button>
+            <button onclick="filterCategory('mindset')" class="cat-btn hover:text-[var(--text)] text-left" data-cat="mindset">
+              Tư duy
+            </button>
+            <button onclick="filterCategory('notes')" class="cat-btn hover:text-[var(--text)] text-left" data-cat="notes">
+              Ghi chép
+            </button>
+          </div>
+        </div>
+
+        <!-- Cột phải: Danh sách bài viết -->
+        <div class="md:col-span-9 divide-y border-subtle" id="article-list">
+
+          <!-- Bài 1 -->
+          <article class="article-item py-8 first:pt-0 group" data-category="strategy">
+            <div class="text-xs text-[var(--muted)] mb-2">21.10.2026 · Chiến lược · 5 phút đọc</div>
+            <h3 class="font-serif text-2xl sm:text-3xl font-normal text-[var(--text)] group-hover:text-[var(--accent)] transition-colors mb-3 leading-snug">
+              <a href="javascript:void(0)" onclick="readArticle('Về sự im lặng trong những cuộc đàm phán quan trọng', '21.10.2026 · Chiến lược', 'Trong phần lớn các cuộc trò chuyện căng thẳng, người lên tiếng đầu tiên thường là người bộc lộ nhiều điểm yếu nhất. Sự im lặng không đồng nghĩa với bối rối hay nhượng bộ — nó là khoảng dừng cần thiết để quan sát toàn bộ bàn cờ.')">
+                Về sự <span class="italic font-normal">im lặng</span> trong những cuộc đàm phán quan trọng
+              </a>
+            </h3>
+            <p class="text-[var(--muted)] text-base font-normal leading-relaxed mb-4">
+              Trong phần lớn các cuộc trò chuyện căng thẳng, người lên tiếng đầu tiên thường là người bộc lộ nhiều điểm yếu nhất. Sự im lặng không đồng nghĩa với bối rối hay nhượng bộ — nó là khoảng dừng cần thiết để quan sát toàn bộ bàn cờ.
+            </p>
+            <a href="javascript:void(0)" onclick="readArticle('Về sự im lặng trong những cuộc đàm phán quan trọng', '21.10.2026 · Chiến lược', 'Trong phần lớn các cuộc trò chuyện căng thẳng, người lên tiếng đầu tiên thường là người bộc lộ nhiều điểm yếu nhất. Sự im lặng không đồng nghĩa với bối rối hay nhượng bộ — nó là khoảng dừng cần thiết để quan sát toàn bộ bàn cờ.')" class="text-sm font-medium text-[var(--accent)] hover:underline">
+              Đọc tiếp &rarr;
+            </a>
+          </article>
+
+          <!-- Bài 2 -->
+          <article class="article-item py-8 group" data-category="mindset">
+            <div class="text-xs text-[var(--muted)] mb-2">15.10.2026 · Tư duy · 4 phút đọc</div>
+            <h3 class="font-serif text-2xl sm:text-3xl font-normal text-[var(--text)] group-hover:text-[var(--accent)] transition-colors mb-3 leading-snug">
+              <a href="javascript:void(0)" onclick="readArticle('Nguyên tắc ra quyết định khi không có đủ dữ liệu', '15.10.2026 · Tư duy', 'Chờ đợi cho đến khi có 100% dữ liệu đồng nghĩa với việc bạn đã bỏ lỡ thời cơ. Những quyết định bước ngoặt trong sự nghiệp luôn đòi hỏi bạn phải chấp nhận rủi ro có tính toán.')">
+                Nguyên tắc ra quyết định khi <span class="italic font-normal">không có đủ</span> dữ liệu
+              </a>
+            </h3>
+            <p class="text-[var(--muted)] text-base font-normal leading-relaxed mb-4">
+              Chờ đợi cho đến khi có 100% dữ liệu đồng nghĩa với việc bạn đã bỏ lỡ thời cơ. Những quyết định bước ngoặt trong sự nghiệp luôn đòi hỏi bạn phải chấp nhận rủi ro có tính toán.
+            </p>
+            <a href="javascript:void(0)" onclick="readArticle('Nguyên tắc ra quyết định khi không có đủ dữ liệu', '15.10.2026 · Tư duy', 'Chờ đợi cho đến khi có 100% dữ liệu đồng nghĩa với việc bạn đã bỏ lỡ thời cơ. Những quyết định bước ngoặt trong sự nghiệp luôn đòi hỏi bạn phải chấp nhận rủi ro có tính toán.')" class="text-sm font-medium text-[var(--accent)] hover:underline">
+              Đọc tiếp &rarr;
+            </a>
+          </article>
+
+          <!-- Bài 3 -->
+          <article class="article-item py-8 group" data-category="mindset">
+            <div class="text-xs text-[var(--muted)] mb-2">08.10.2026 · Tư duy · 6 phút đọc</div>
+            <h3 class="font-serif text-2xl sm:text-3xl font-normal text-[var(--text)] group-hover:text-[var(--accent)] transition-colors mb-3 leading-snug">
+              <a href="javascript:void(0)" onclick="readArticle('Kỷ luật tự thân trong môi trường quá tải thông tin', '08.10.2026 · Tư duy', 'Mỗi ngày có hàng trăm thông báo cố gắng giành lấy sự chú ý của bạn. Khả năng nói không với những kích thích tầm thường là điều kiện tiên quyết để tạo ra kết quả có giá trị.')">
+                Kỷ luật tự thân trong môi trường quá tải thông tin
+              </a>
+            </h3>
+            <p class="text-[var(--muted)] text-base font-normal leading-relaxed mb-4">
+              Mỗi ngày có hàng trăm thông báo cố gắng giành lấy sự chú ý của bạn. Khả năng nói không với những kích thích tầm thường là điều kiện tiên quyết để tạo ra kết quả có giá trị.
+            </p>
+            <a href="javascript:void(0)" onclick="readArticle('Kỷ luật tự thân trong môi trường quá tải thông tin', '08.10.2026 · Tư duy', 'Mỗi ngày có hàng trăm thông báo cố gắng giành lấy sự chú ý của bạn. Khả năng nói không với những kích thích tầm thường là điều kiện tiên quyết để tạo ra kết quả có giá trị.')" class="text-sm font-medium text-[var(--accent)] hover:underline">
+              Đọc tiếp &rarr;
+            </a>
+          </article>
+
+          <!-- Bài 4 -->
+          <article class="article-item py-8 group" data-category="notes">
+            <div class="text-xs text-[var(--muted)] mb-2">29.09.2026 · Ghi chép · 7 phút đọc</div>
+            <h3 class="font-serif text-2xl sm:text-3xl font-normal text-[var(--text)] group-hover:text-[var(--accent)] transition-colors mb-3 leading-snug">
+              <a href="javascript:void(0)" onclick="readArticle('Ghi chép về cách xây dựng vị thế độc lập', '29.09.2026 · Ghi chép', 'Sự độc lập không đến từ việc đối đầu với mọi người, mà đến từ việc xây dựng năng lực chuyên môn hiếm hoi và tự chủ về tư duy lẫn tài chính.')">
+                Ghi chép về cách xây dựng <span class="italic font-normal">vị thế độc lập</span>
+              </a>
+            </h3>
+            <p class="text-[var(--muted)] text-base font-normal leading-relaxed mb-4">
+              Sự độc lập không đến từ việc đối đầu với mọi người, mà đến từ việc xây dựng năng lực chuyên môn hiếm hoi và tự chủ về tư duy lẫn tài chính.
+            </p>
+            <a href="javascript:void(0)" onclick="readArticle('Ghi chép về cách xây dựng vị thế độc lập', '29.09.2026 · Ghi chép', 'Sự độc lập không đến từ việc đối đầu với mọi người, mà đến từ việc xây dựng năng lực chuyên môn hiếm hoi và tự chủ về tư duy lẫn tài chính.')" class="text-sm font-medium text-[var(--accent)] hover:underline">
+              Đọc tiếp &rarr;
+            </a>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- GIỚI THIỆU: CHÂN THẬT, KHÔNG CHỨC DANH PHÔ TRƯƠNG             -->
+    <!-- ============================================================== -->
+    <section id="about" class="max-w-5xl mx-auto px-6 sm:px-10 py-16 border-t border-subtle">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+        <div class="md:col-span-3">
+          <h2 class="text-sm font-medium text-[var(--text)]">Giới thiệu</h2>
+        </div>
+        <div class="md:col-span-9 space-y-4 text-[var(--muted)] text-base leading-relaxed max-w-2xl">
+          <p>
+            Tôi là Thomas. Tôi tạo ra trang này như một không gian làm việc cá nhân và lưu trữ suy nghĩ, tách biệt khỏi sự ồn ào của mạng xã hội.
+          </p>
+          <p>
+            Tôi viết về những bài học thực tế trong công việc, tư duy chiến lược và cách rèn luyện kỷ luật bản thân.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- BẢN TIN: THIẾT KẾ PHẲNG, GỌN NHẸ                               -->
+    <!-- ============================================================== -->
+    <section id="newsletter" class="max-w-5xl mx-auto px-6 sm:px-10 py-16 border-t border-subtle">
+      <div class="max-w-xl">
+        <h2 class="text-base font-medium text-[var(--text)] mb-2">
+          Nhận bài viết qua email
+        </h2>
+        <p class="text-[var(--muted)] text-sm mb-6 leading-relaxed">
+          Tôi gửi bài viết mới trực tiếp đến hòm thư khi có bài mới. Không có email quảng cáo.
+        </p>
+
+        <form onsubmit="handleSub(event)" class="flex flex-col sm:flex-row gap-3">
+          <input 
+            type="email" 
+            id="sub-email"
+            required
+            placeholder="Địa chỉ email"
+            class="flex-1 px-3.5 py-2 rounded border border-subtle bg-transparent text-sm text-[var(--text)] placeholder:text-[var(--muted)]/50 focus:outline-none focus:border-[var(--accent)] transition-colors"
+          >
+          <button 
+            type="submit"
+            class="px-5 py-2 rounded bg-[var(--text)] text-[var(--bg)] text-sm font-medium hover:opacity-80 transition-opacity"
+          >
+            Đăng ký
+          </button>
+        </form>
+        <p id="sub-msg" class="hidden text-xs text-[var(--accent)] mt-3">Đã đăng ký thành công.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- CHẾ ĐỘ ĐỌC BÀI VIẾT BIẾN THIÊN THEO MODE                       -->
+    <!-- ============================================================== -->
+    <div id="reader-view" class="fixed inset-0 z-50 reader-backdrop hidden overflow-y-auto p-6 sm:p-12 animate-in fade-in duration-300">
+      <!-- Lớp phủ Vignette biến thiên theo mode -->
+      <div class="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_35%,var(--reader-vignette-outer)_100%)]"></div>
+
+      <div class="relative max-w-2xl mx-auto py-10">
+        <button onclick="closeReader()" class="text-xs text-[var(--muted)] hover:text-[var(--reader-title)] flex items-center gap-2 mb-10 transition-colors cursor-pointer">
+          <span>&larr;</span>
+          <span>Quay lại</span>
+        </button>
+
+        <h1 class="font-serif text-3xl sm:text-5xl font-normal text-[var(--reader-title)] leading-[1.15] mb-4" id="reader-title">
+          Tiêu đề bài viết
+        </h1>
+
+        <div class="text-xs text-[var(--muted)] pb-6 mb-8 border-b border-[var(--reader-border)]" id="reader-meta">
+          Thời gian đọc
+        </div>
+
+        <div class="space-y-6 text-base sm:text-lg leading-[1.85] text-[var(--reader-text)] font-normal" id="reader-body">
+          Nội dung bài viết
+        </div>
+
+        <div class="pt-12 mt-12 border-t border-[var(--reader-border)] flex justify-between items-center text-xs text-[var(--muted)]">
+          <span class="font-serif text-[var(--accent)] text-sm">thetalkofthomas</span>
+          <button onclick="closeReader()" class="text-[var(--accent)] hover:underline cursor-pointer">Đóng bài viết &uarr;</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============================================================== -->
+  <!-- FOOTER: BÌNH THƯỜNG, TỰ NHIÊN, KHÔNG ALL-CAPS                  -->
+  <!-- ============================================================== -->
+  <footer class="border-t border-subtle py-8">
+    <div class="max-w-5xl mx-auto px-6 sm:px-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--muted)]">
+      <div>
+        thetalkofthomas © 2026
+      </div>
+      <div class="flex items-center gap-6">
+        <a href="#articles" class="hover:text-[var(--text)] transition-colors">Bài viết</a>
+        <a href="#about" class="hover:text-[var(--text)] transition-colors">Giới thiệu</a>
+        <a href="#newsletter" class="hover:text-[var(--text)] transition-colors">Bản tin</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================================== -->
+  <!-- JAVASCRIPT GỌN NHẸ                                             -->
+  <!-- ============================================================== -->
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const btnText = document.getElementById('theme-btn-text');
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        btnText.textContent = 'Giao diện tối';
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.classList.add('dark');
+        btnText.textContent = 'Giao diện sáng';
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+
+    (function initTheme() {
+      if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+        const btnText = document.getElementById('theme-btn-text');
+        if (btnText) btnText.textContent = 'Giao diện sáng';
+      }
+    })();
+
+    function filterCategory(cat) {
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        if (btn.getAttribute('data-cat') === cat) {
+          btn.className = 'cat-btn font-medium text-[var(--text)] text-left';
+        } else {
+          btn.className = 'cat-btn text-[var(--muted)] hover:text-[var(--text)] text-left';
+        }
+      });
+
+      document.querySelectorAll('.article-item').forEach(item => {
+        if (cat === 'all' || item.getAttribute('data-category') === cat) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    function readArticle(title, meta, excerpt) {
+      document.getElementById('reader-title').innerHTML = title;
+      document.getElementById('reader-meta').textContent = meta;
+      document.getElementById('reader-body').innerHTML = `
+        <p class="text-xl font-serif italic text-[var(--accent)] pb-4 leading-relaxed">
+          "${excerpt}"
+        </p>
+        <p>
+          Trong công việc và kinh doanh, chúng ta rất dễ bị cuốn vào ảo tưởng rằng kẻ nói nhiều nhất, to tiếng nhất là kẻ nắm quyền kiểm soát. Nhưng thực tế thường chứng minh điều ngược lại.
+        </p>
+        <p>
+          Khi bạn chủ động giữ sự tĩnh lặng, bạn buộc đối phương phải lấp đầy khoảng trống đó bằng lời nói của chính họ. Đó là lúc những sơ hở, sự bất an và mục đích thật sự bắt đầu lộ diện.
+        </p>
+        <p>
+          Kỷ luật không phải là sự gò bó ép buộc, mà là sự tự do tối cao: tự do khỏi những phản ứng bộc phát thiếu suy nghĩ, và khả năng chỉ hành động khi thời điểm thực sự chín muồi.
+        </p>
+      `;
+      document.getElementById('reader-view').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeReader() {
+      document.getElementById('reader-view').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function handleSub(e) {
+      e.preventDefault();
+      document.getElementById('sub-email').value = '';
+      const msg = document.getElementById('sub-msg');
+      msg.classList.remove('hidden');
+      setTimeout(() => msg.classList.add('hidden'), 4000);
+    }
+  </script>
+</body>
+</html>
