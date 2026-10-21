@@ -4,6 +4,7 @@ import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { Post } from "@/types/database";
 
 export default function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -26,31 +27,31 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   useEffect(() => {
     async function loadPost() {
       try {
-        const { data, error } = await supabase
-          .from("posts")
-          .select("*")
-          .eq("id", postId)
-          .single();
-
-        if (error || !data) {
-          setErrorMsg("Không tìm thấy bài viết này.");
-        } else {
-          setTitle(data.title);
-          setSlug(data.slug);
-          setCategory(data.category);
-          setReadTime(data.read_time);
-          setExcerpt(data.excerpt);
-          setContent(data.content);
-          setPublished(data.published);
+        const res = await fetch("/api/posts");
+        if (res.ok) {
+          const posts: Post[] = await res.json();
+          const found = posts.find((p) => p.id === postId);
+          if (found) {
+            setTitle(found.title);
+            setSlug(found.slug);
+            setCategory(found.category);
+            setReadTime(found.read_time);
+            setExcerpt(found.excerpt);
+            setContent(found.content);
+            setPublished(found.published);
+            setLoading(false);
+            return;
+          }
         }
+        setErrorMsg("Không tìm thấy bài viết này.");
       } catch {
-        setErrorMsg("Lỗi kết nối cơ sở dữ liệu.");
+        setErrorMsg("Lỗi khi tải dữ liệu bài viết.");
       } finally {
         setLoading(false);
       }
     }
     loadPost();
-  }, [postId, supabase]);
+  }, [postId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,9 +59,10 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
     setErrorMsg("");
 
     try {
-      const { error } = await supabase
-        .from("posts")
-        .update({
+      const res = await fetch(`/api/posts/${postId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           title,
           slug,
           category,
@@ -68,12 +70,12 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
           excerpt,
           content,
           published,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", postId);
+        }),
+      });
 
-      if (error) {
-        setErrorMsg("Lỗi khi cập nhật bài viết: " + error.message);
+      if (!res.ok) {
+        const data = await res.json();
+        setErrorMsg(data.error || "Lỗi khi cập nhật bài viết.");
       } else {
         router.push("/admin");
       }

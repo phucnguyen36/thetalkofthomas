@@ -51,19 +51,20 @@ export default function NewPostPage() {
       published,
     };
 
-    // 1. Lưu vào localStorage để bài viết xuất hiện ngay trên máy
+    // Lưu bài viết qua API server (tự động đồng bộ file JSON server & Supabase)
     try {
-      const existing = localStorage.getItem("thomas_custom_posts");
-      const currentList: Post[] = existing ? JSON.parse(existing) : [];
-      const updatedList = [newPost, ...currentList];
-      localStorage.setItem("thomas_custom_posts", JSON.stringify(updatedList));
-    } catch {
-      // ignore
-    }
+      const res = await fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newPost),
+      });
 
-    // 2. Đồng bộ lên Supabase nếu có kết nối
-    try {
-      await supabase.from("posts").insert([newPost]);
+      if (!res.ok) {
+        const data = await res.json();
+        setErrorMsg(data.error || "Không thể lưu bài viết.");
+        setLoading(false);
+        return;
+      }
     } catch {
       // ignore
     }

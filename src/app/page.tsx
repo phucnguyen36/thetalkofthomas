@@ -87,40 +87,22 @@ export default function HomePage() {
       setTheme("light");
     }
 
-    // 2. Tải bài viết
+    // 2. Tải bài viết trực tiếp từ API server (đồng bộ tất cả thiết bị & Supabase)
     async function loadPosts() {
-      let combined: Post[] = [...DEFAULT_POSTS];
-
-      const customLocal = localStorage.getItem("thomas_custom_posts");
-      if (customLocal) {
-        try {
-          const parsed = JSON.parse(customLocal) as Post[];
-          const publishedCustom = parsed.filter((p) => p.published);
-          combined = [...publishedCustom, ...combined];
-        } catch {
-          // ignore
-        }
-      }
-
       try {
-        const supabase = createClient();
-        const { data, error } = await supabase
-          .from("posts")
-          .select("*")
-          .eq("published", true)
-          .order("created_at", { ascending: false });
-
-        if (!error && data && data.length > 0) {
-          combined = [...(data as Post[]), ...combined];
+        const res = await fetch("/api/posts");
+        if (res.ok) {
+          const data: Post[] = await res.json();
+          const published = data.filter((p) => p.published);
+          if (published.length > 0) {
+            setPosts(published);
+            return;
+          }
         }
       } catch {
-        // ignore
+        // fallback
       }
-
-      const uniquePosts = Array.from(
-        new Map(combined.map((p) => [p.slug, p])).values()
-      );
-      setPosts(uniquePosts);
+      setPosts(DEFAULT_POSTS);
     }
 
     loadPosts();
@@ -154,8 +136,17 @@ export default function HomePage() {
     }
   };
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
+    try {
+      await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: subEmail }),
+      });
+    } catch {
+      // ignore
+    }
     setSubEmail("");
     setSubSuccess(true);
     setTimeout(() => setSubSuccess(false), 4000);

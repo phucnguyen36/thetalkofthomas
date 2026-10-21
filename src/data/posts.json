@@ -1,0 +1,50 @@
+[
+  {
+    "id": "00000000-0000-0000-0000-000000000001",
+    "created_at": "2026-10-21T00:00:00Z",
+    "updated_at": "2026-10-21T00:00:00Z",
+    "title": "Về sự im lặng trong những cuộc đàm phán quan trọng",
+    "slug": "ve-su-im-lang-trong-nhung-cuoc-dam-phan-quan-trong",
+    "category": "Chiến lược",
+    "excerpt": "Trong phần lớn các cuộc trò chuyện căng thẳng, người lên tiếng đầu tiên thường là người bộc lộ nhiều điểm yếu nhất. Sự im lặng không đồng nghĩa với bối rối hay nhượng bộ — nó là khoảng dừng cần thiết để quan sát toàn bộ bàn cờ.",
+    "content": "Trong công việc và kinh doanh, chúng ta rất dễ bị cuốn vào ảo tưởng rằng kẻ nói nhiều nhất, to tiếng nhất là kẻ nắm quyền kiểm soát. Nhưng thực tế thường chứng minh điều ngược lại.\n\nKhi bạn chủ động giữ sự tĩnh lặng, bạn buộc đối phương phải lấp đầy khoảng trống đó bằng lời nói của chính họ. Đó là lúc những sơ hở, sự bất an và mục đích thật sự bắt đầu lộ diện.\n\nKỷ luật không phải là sự gò bó ép buộc, mà là sự tự do tối cao: tự do khỏi những phản ứng bộc phát thiếu suy nghĩ, và khả năng chỉ hành động khi thời điểm thực sự chín muồi.",
+    "read_time": "5 phút đọc",
+    "published": true
+  },
+  {
+    "id": "00000000-0000-0000-0000-000000000002",
+    "created_at": "2026-10-15T00:00:00Z",
+    "updated_at": "2026-10-21T00:00:00Z",
+    "title": "Nguyên tắc ra quyết định khi không có đủ dữ liệu",
+    "slug": "nguyen-tac-ra-quyet-dinh-khi-khong-co-du-du-lieu",
+    "category": "Tư duy",
+    "excerpt": "Chờ đợi cho đến khi có 100% dữ liệu đồng nghĩa với việc bạn đã bỏ lỡ thời cơ. Những quyết định bước ngoặt trong sự nghiệp luôn đòi hỏi bạn phải chấp nhận rủi ro có tính toán.",
+    "content": "Sự tê liệt do phân tích quá mức là cái bẫy lớn nhất của trí thức. Cách xây dựng trực giác có căn cứ và chấp nhận rủi ro có tính toán khi thời khắc đến.\n\nNgười lãnh đạo giỏi không phải là người không bao giờ phạm sai lầm, mà là người biết cách đưa ra quyết định dứt khoát trong điều kiện mập mờ và chịu trách nhiệm đến cùng.",
+    "read_time": "4 phút đọc",
+    "published": true
+  },
+  {
+    "id": "00000000-0000-0000-0000-000000000003",
+    "created_at": "2026-10-08T00:00:00Z",
+    "updated_at": "2026-10-21T00:00:00Z",
+    "title": "Kỷ luật tự thân trong môi trường quá tải thông tin",
+    "slug": "ky-luat-tu-than-trong-moi-truong-qua-tai-thong-tin",
+    "category": "Tư duy",
+    "excerpt": "Mỗi ngày có hàng trăm thông báo cố gắng giành lấy sự chú ý của bạn. Khả năng nói không với những kích thích tầm thường là điều kiện tiên quyết để tạo ra kết quả có giá trị.",
+    "content": "Não bộ con người không được tạo ra để tiếp nhận hàng ngàn kích thích rẻ tiền mỗi ngày. Khả năng nói không là thứ vũ khí quyền năng nhất.\n\nHãy dựng lên một pháo đài tinh thần để bảo vệ năng lượng cho những mục tiêu thật sự dài hạn.",
+    "read_time": "6 phút đọc",
+    "published": true
+  },
+  {
+    "id": "00000000-0000-0000-0000-000000000004",
+    "created_at": "2026-09-29T00:00:00Z",
+    "updated_at": "2026-10-21T00:00:00Z",
+    "title": "Ghi chép về cách xây dựng vị thế độc lập",
+    "slug": "ghi-chep-ve-cach-xay-dung-vi-the-doc-lap",
+    "category": "Ghi chép",
+    "excerpt": "Sự độc lập không đến từ việc đối đầu với mọi người, mà đến từ việc xây dựng năng lực chuyên môn hiếm hoi và tự chủ về tư duy lẫn tài chính.",
+    "content": "Độc lập không có nghĩa là đối đầu với tất cả. Độc lập là làm chủ được thời gian, kỹ năng cốt lõi và không bị phụ thuộc vào sự chấp thuận của người khác.",
+    "read_time": "7 phút đọc",
+    "published": true
+  }
+]

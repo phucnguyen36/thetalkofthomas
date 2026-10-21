@@ -91,38 +91,20 @@ export default function AdminDashboardPage() {
         }
       }
 
-      // 2. Tải bài viết (kết hợp custom posts trong localStorage và Supabase/mặc định)
-      let combined: Post[] = [...DEFAULT_POSTS];
-      
-      const customLocal = localStorage.getItem("thomas_custom_posts");
-      if (customLocal) {
-        try {
-          const parsedCustom = JSON.parse(customLocal) as Post[];
-          combined = [...parsedCustom, ...combined];
-        } catch {
-          // ignore
-        }
-      }
-
-      // Thử lấy từ Supabase nếu có
+      // 2. Tải bài viết từ server API
       try {
-        const { data, error } = await supabase
-          .from("posts")
-          .select("*")
-          .order("created_at", { ascending: false });
-
-        if (!error && data && data.length > 0) {
-          combined = [...(data as Post[]), ...combined];
+        const res = await fetch("/api/posts");
+        if (res.ok) {
+          const data: Post[] = await res.json();
+          setPosts(data);
+          setLoading(false);
+          return;
         }
       } catch {
-        // ignore
+        // fallback
       }
 
-      // Khử trùng lặp theo slug
-      const uniquePosts = Array.from(
-        new Map(combined.map((p) => [p.slug, p])).values()
-      );
-      setPosts(uniquePosts);
+      setPosts(DEFAULT_POSTS);
       setLoading(false);
     }
 
@@ -151,13 +133,13 @@ export default function AdminDashboardPage() {
       p.id === post.id ? { ...p, published: updatedStatus } : p
     );
     setPosts(updatedPosts);
-    localStorage.setItem("thomas_custom_posts", JSON.stringify(updatedPosts));
 
     try {
-      await supabase
-        .from("posts")
-        .update({ published: updatedStatus, updated_at: new Date().toISOString() })
-        .eq("id", post.id);
+      await fetch(`/api/posts/${post.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ published: updatedStatus }),
+      });
     } catch {
       // ignore
     }
@@ -168,10 +150,11 @@ export default function AdminDashboardPage() {
 
     const updated = posts.filter((p) => p.id !== id);
     setPosts(updated);
-    localStorage.setItem("thomas_custom_posts", JSON.stringify(updated));
 
     try {
-      await supabase.from("posts").delete().eq("id", id);
+      await fetch(`/api/posts/${id}`, {
+        method: "DELETE",
+      });
     } catch {
       // ignore
     }
