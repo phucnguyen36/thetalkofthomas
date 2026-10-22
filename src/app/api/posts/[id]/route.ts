@@ -73,7 +73,7 @@ export async function PUT(
       if (
         supabaseUrl &&
         supabaseAnonKey &&
-        !supabaseUrl.includes("mock-placeholder")
+        !supabaseUrl.includes("placeholder")
       ) {
         const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
           cookies: {
@@ -126,7 +126,7 @@ export async function DELETE(
       if (
         supabaseUrl &&
         supabaseAnonKey &&
-        !supabaseUrl.includes("mock-placeholder")
+        !supabaseUrl.includes("placeholder")
       ) {
         const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
           cookies: {

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 import { Post } from "@/types/database";
 
 const DEFAULT_POSTS: Post[] = [

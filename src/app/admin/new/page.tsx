@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 import { Post } from "@/types/database";
 
 export default function NewPostPage() {
@@ -17,8 +16,6 @@ export default function NewPostPage() {
   const [published, setPublished] = useState(true);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-
-  const supabase = createClient();
 
   const handleTitleChange = (val: string) => {
     setTitle(val);

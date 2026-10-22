@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     if (
       supabaseUrl &&
       supabaseAnonKey &&
-      !supabaseUrl.includes("mock-placeholder")
+      !supabaseUrl.includes("placeholder")
     ) {
       const cookieStore = await cookies();
       const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
