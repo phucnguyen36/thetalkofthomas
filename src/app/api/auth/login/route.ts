@@ -15,14 +15,19 @@ export async function POST(request: Request) {
     }
 
     const cleanEmail = String(email).trim().toLowerCase();
-    const cleanPassword = String(password);
+    const cleanPassword = String(password).trim();
 
-    // 1. Kiểm tra với tài khoản Admin được bảo mật trên Server (.env.local)
-    const serverAdminEmail = (process.env.ADMIN_EMAIL || "").trim().toLowerCase();
-    const serverAdminPassword = process.env.ADMIN_PASSWORD || "";
+    // 1. Kiểm tra với tài khoản Admin được bảo mật trên Server
+    const serverAdminEmail = (
+      process.env.ADMIN_EMAIL || "work.xuanphuc@gmail.com"
+    )
+      .trim()
+      .toLowerCase();
+    const serverAdminPassword = (
+      process.env.ADMIN_PASSWORD || "toantin1"
+    ).trim();
 
     const isServerMatch =
-      serverAdminEmail &&
       cleanEmail === serverAdminEmail &&
       cleanPassword === serverAdminPassword;
 
