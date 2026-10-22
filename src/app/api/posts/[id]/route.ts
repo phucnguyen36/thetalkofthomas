@@ -83,7 +83,14 @@ export async function PUT(
             setAll() {},
           },
         });
-        await supabase.from("posts").upsert(updatedPost);
+        const { error } = await supabase.from("posts").upsert(updatedPost);
+        if (error) {
+          console.error("Supabase upsert error:", error);
+          return NextResponse.json(
+            { error: "Lỗi cập nhật Supabase: " + error.message },
+            { status: 500 }
+          );
+        }
       }
     } catch {
       // ignore
@@ -118,7 +125,7 @@ export async function DELETE(
     const filtered = currentPosts.filter((p) => p.id !== id);
     saveLocalPosts(filtered);
 
-    // Xóa khỏi Supabase nếu có
+    // Xóa khỏi Supabase nếu có cấu hình
     try {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
       const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -136,10 +143,17 @@ export async function DELETE(
             setAll() {},
           },
         });
-        await supabase.from("posts").delete().eq("id", id);
+        const { error } = await supabase.from("posts").delete().eq("id", id);
+        if (error) {
+          console.error("Supabase delete error:", error);
+          return NextResponse.json(
+            { error: "Lỗi cơ sở dữ liệu Supabase: " + error.message },
+            { status: 500 }
+          );
+        }
       }
-    } catch {
-      // ignore
+    } catch (err: any) {
+      console.error("Delete exception:", err);
     }
 
     return NextResponse.json({ success: true });

@@ -121,7 +121,14 @@ export async function POST(request: Request) {
             setAll() {},
           },
         });
-        await supabase.from("posts").upsert(newPost);
+        const { error } = await supabase.from("posts").upsert(newPost);
+        if (error) {
+          console.error("Supabase insert error:", error);
+          return NextResponse.json(
+            { error: "Lỗi lưu Supabase: " + error.message },
+            { status: 500 }
+          );
+        }
       }
     } catch {
       // ignore

@@ -129,34 +129,47 @@ export default function AdminDashboardPage() {
 
   const handleTogglePublish = async (post: Post) => {
     const updatedStatus = !post.published;
-    const updatedPosts = posts.map((p) =>
-      p.id === post.id ? { ...p, published: updatedStatus } : p
-    );
-    setPosts(updatedPosts);
 
     try {
-      await fetch(`/api/posts/${post.id}`, {
+      const res = await fetch(`/api/posts/${post.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ published: updatedStatus }),
       });
+
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || "Không thể cập nhật trạng thái bài viết.");
+        return;
+      }
+
+      const updatedPosts = posts.map((p) =>
+        p.id === post.id ? { ...p, published: updatedStatus } : p
+      );
+      setPosts(updatedPosts);
     } catch {
-      // ignore
+      alert("Đã xảy ra lỗi kết nối khi cập nhật bài viết.");
     }
   };
 
   const handleDelete = async (id: string, title: string) => {
     if (!confirm(`Bạn có chắc chắn muốn xóa bài viết "${title}"?`)) return;
 
-    const updated = posts.filter((p) => p.id !== id);
-    setPosts(updated);
-
     try {
-      await fetch(`/api/posts/${id}`, {
+      const res = await fetch(`/api/posts/${id}`, {
         method: "DELETE",
       });
+
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || "Không thể xóa bài viết.");
+        return;
+      }
+
+      const updated = posts.filter((p) => p.id !== id);
+      setPosts(updated);
     } catch {
-      // ignore
+      alert("Đã xảy ra lỗi kết nối khi xóa bài viết.");
     }
   };
 
