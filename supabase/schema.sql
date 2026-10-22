@@ -16,26 +16,8 @@ CREATE TABLE IF NOT EXISTS public.posts (
     published BOOLEAN DEFAULT false
 );
 
--- 2. KÍCH HOẠT BẢO MẬT ROW LEVEL SECURITY (RLS)
-ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
-
--- 3. XÓA POLICY CŨ NẾU ĐÃ TỒN TẠI (TRÁNH LỖI DUPLICATE POLICY)
-DROP POLICY IF EXISTS "Public readers can view published posts" ON public.posts;
-DROP POLICY IF EXISTS "Admin can do everything when authenticated" ON public.posts;
-
--- Độc giả công khai: Chỉ được đọc bài viết ĐÃ XUẤT BẢN (published = true)
-CREATE POLICY "Public readers can view published posts" 
-ON public.posts 
-FOR SELECT 
-USING (published = true);
-
--- Quản trị viên (Thomas - đã đăng nhập): Toàn quyền Xem, Thêm, Sửa, Xóa mọi bài viết
-CREATE POLICY "Admin can do everything when authenticated" 
-ON public.posts 
-FOR ALL 
-TO authenticated 
-USING (true) 
-WITH CHECK (true);
+-- 2. TẮT BẢO MẬT RLS ĐỂ CHO PHÉP THÊM, SỬA, XÓA TRỰC TIẾP TỪ SERVER API
+ALTER TABLE public.posts DISABLE ROW LEVEL SECURITY;
 
 -- 4. DỌN DẸP DỮ LIỆU CŨ BỊ TRÙNG LẶP (NẾU BẠN TỪNG CHẠY SCRIPT NHIỀU LẦN)
 -- Script này sẽ xóa các bản ghi cũ có cùng slug để chỉ giữ lại bản ghi chuẩn duy nhất
