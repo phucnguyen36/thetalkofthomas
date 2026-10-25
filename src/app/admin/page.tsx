@@ -187,14 +187,16 @@ export default function AdminDashboardPage() {
       <header className="border-b border-subtle">
         <div className="max-w-5xl mx-auto px-6 sm:px-10 h-20 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/" className="group flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-[2px] border border-[var(--border)] group-hover:border-[var(--accent)] flex items-center justify-center transition-colors">
-                <span className="font-serif text-sm font-bold text-[var(--accent)]">T</span>
+            <Link href="/" className="group flex items-center gap-3">
+              <div className="w-8 h-8 rounded-[6px] border border-[var(--border)] group-hover:border-[var(--accent)] flex items-center justify-center transition-all bg-[var(--card-bg)] shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+                <span className="font-garamond text-lg font-semibold text-[var(--accent)] leading-none select-none">
+                  T
+                </span>
               </div>
-              <div className="flex items-baseline gap-1 font-serif text-xl tracking-tight text-[var(--text)]">
-                <span>The Talk</span>
-                <span className="italic font-light text-base text-[var(--accent)]">of</span>
-                <span>Thomas</span>
+              <div className="flex items-baseline gap-1.5 font-garamond text-xl sm:text-[22px] tracking-[-0.025em] text-[var(--text)] select-none">
+                <span className="font-normal">The Talk</span>
+                <span className="italic font-normal text-lg text-[var(--accent)] px-0.5">of</span>
+                <span className="font-normal">Thomas</span>
               </div>
             </Link>
             <span className="text-xs text-[var(--muted)] border-l border-subtle pl-4">

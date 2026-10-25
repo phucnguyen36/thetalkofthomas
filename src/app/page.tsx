@@ -157,22 +157,20 @@ export default function HomePage() {
       <header className="w-full border-b border-subtle">
         <div className="max-w-5xl mx-auto px-6 sm:px-10 h-24 flex items-center justify-between">
           
-          {/* LOGO: Biểu tượng triện bespoke kết hợp Typographic lockup */}
-          <Link href="/" className="group flex items-center gap-3.5">
-            {/* Hallmark Cartouche Emblem */}
-            <div className="w-9 h-9 rounded-[3px] border border-[var(--border)] group-hover:border-[var(--accent)] flex items-center justify-center transition-all duration-300 relative bg-[var(--card-bg)] shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-              <svg className="w-5 h-5 text-[var(--accent)] transition-transform duration-300 group-hover:scale-105" viewBox="0 0 24 24" fill="none">
-                {/* Minimalist Interlocking T Monogram */}
-                <path d="M4 7h16M12 7v13M8 20h8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" />
-                <path d="M7 11h10M12 11v6" stroke="currentColor" strokeWidth="1" strokeOpacity="0.4" strokeLinecap="square" />
-              </svg>
+          {/* LOGO: Phong cách Apple Garamond mềm mại & thanh lịch */}
+          <Link href="/" className="group flex items-center gap-3">
+            {/* Hallmark Monogram Seal */}
+            <div className="w-8 h-8 rounded-[6px] border border-[var(--border)] group-hover:border-[var(--accent)] flex items-center justify-center transition-all duration-300 relative bg-[var(--card-bg)] shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+              <span className="font-garamond text-xl font-semibold text-[var(--accent)] leading-none select-none transition-transform duration-300 group-hover:scale-105">
+                T
+              </span>
             </div>
 
             {/* Wordmark: The Talk of Thomas */}
-            <div className="flex items-baseline gap-1.5 font-serif text-2xl sm:text-[25px] tracking-[-0.025em] text-[var(--text)] select-none">
-              <span className="font-medium group-hover:text-[var(--accent)] transition-colors">The Talk</span>
-              <span className="font-serif italic font-light text-xl text-[var(--accent)] transition-opacity">of</span>
-              <span className="font-medium group-hover:text-[var(--accent)] transition-colors">Thomas</span>
+            <div className="flex items-baseline gap-1.5 font-garamond text-2xl sm:text-[27px] tracking-[-0.025em] text-[var(--text)] select-none">
+              <span className="font-normal group-hover:text-[var(--accent)] transition-colors">The Talk</span>
+              <span className="italic font-normal text-[22px] text-[var(--accent)] transition-opacity px-0.5">of</span>
+              <span className="font-normal group-hover:text-[var(--accent)] transition-colors">Thomas</span>
             </div>
           </Link>
 

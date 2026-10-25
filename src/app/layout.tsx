@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { EB_Garamond, Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
+
+const ebGaramond = EB_Garamond({
+  variable: "--font-eb-garamond",
+  subsets: ["latin", "vietnamese"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -62,7 +70,7 @@ export default function RootLayout({
   return (
     <html lang="vi" className="scroll-smooth light">
       <body
-        className={`${cormorant.variable} ${inter.variable} antialiased min-h-screen flex flex-col justify-between`}
+        className={`${ebGaramond.variable} ${cormorant.variable} ${inter.variable} antialiased min-h-screen flex flex-col justify-between`}
       >
         {children}
       </body>

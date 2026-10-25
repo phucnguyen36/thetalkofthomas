@@ -10,7 +10,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        serif: ["var(--font-cormorant)", "Georgia", "serif"],
+        garamond: ["var(--font-eb-garamond)", "Apple Garamond", "ITC Garamond", "Georgia", "serif"],
+        serif: ["var(--font-eb-garamond)", "var(--font-cormorant)", "Georgia", "serif"],
         sans: ["var(--font-inter)", "-apple-system", "sans-serif"],
       },
       colors: {
