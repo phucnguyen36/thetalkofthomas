@@ -52,7 +52,7 @@ export async function GET() {
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (!error && data && data.length > 0) {
+      if (!error && Array.isArray(data)) {
         return NextResponse.json(data);
       }
     }

@@ -96,15 +96,17 @@ export default function AdminDashboardPage() {
         const res = await fetch("/api/posts");
         if (res.ok) {
           const data: Post[] = await res.json();
-          setPosts(data);
-          setLoading(false);
-          return;
+          if (Array.isArray(data)) {
+            setPosts(data);
+            setLoading(false);
+            return;
+          }
         }
       } catch {
         // fallback
       }
 
-      setPosts(DEFAULT_POSTS);
+      setPosts([]);
       setLoading(false);
     }
 

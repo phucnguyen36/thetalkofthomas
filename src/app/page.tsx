@@ -92,8 +92,8 @@ export default function HomePage() {
         const res = await fetch("/api/posts");
         if (res.ok) {
           const data: Post[] = await res.json();
-          const published = data.filter((p) => p.published);
-          if (published.length > 0) {
+          if (Array.isArray(data)) {
+            const published = data.filter((p) => p.published);
             setPosts(published);
             return;
           }
@@ -101,7 +101,7 @@ export default function HomePage() {
       } catch {
         // fallback
       }
-      setPosts(DEFAULT_POSTS);
+      setPosts([]);
     }
 
     loadPosts();
