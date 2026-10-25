@@ -336,43 +336,58 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* CHẾ ĐỘ ĐỌC: ĐỒNG BỘ THEO MODE */}
+        {/* CHẾ ĐỘ ĐỌC: ĐỒNG BỘ THEO MODE & KHÔNG BỊ TRÔI NỀN KHI CUỘN */}
         {activePost && (
-          <div className="fixed inset-0 z-50 reader-backdrop overflow-y-auto p-6 sm:p-12 animate-in fade-in duration-300">
-            <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_35%,var(--reader-vignette-outer)_100%)]"></div>
+          <div className="fixed inset-0 z-50 animate-in fade-in duration-300">
+            {/* 1. LỚP NỀN CỐ ĐỊNH (FIXED BACKDROP & VIGNETTE): Luôn bao trọn 100% màn hình, không bị cuộn mất khi đọc bài dài */}
+            <div className="fixed inset-0 pointer-events-none reader-backdrop -z-10" aria-hidden="true">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,var(--reader-vignette-outer)_100%)]" />
+            </div>
 
-            <div className="relative max-w-2xl mx-auto py-12 sm:py-16">
-              <button
-                onClick={() => setActivePost(null)}
-                className="text-xs text-[var(--muted)] hover:text-[var(--reader-title)] flex items-center gap-2 mb-12 transition-colors cursor-pointer"
-              >
-                <span>&larr;</span>
-                <span>Quay lại danh sách</span>
-              </button>
-
-              <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[var(--reader-title)] leading-[1.15] mb-4">
-                {activePost.title}
-              </h1>
-
-              <div className="text-xs text-[var(--muted)] pb-6 mb-8 border-b border-[var(--reader-border)]">
-                {formatDate(activePost.created_at)} · {activePost.category} · {activePost.read_time}
-              </div>
-
-              <div className="space-y-6 text-base sm:text-lg leading-[1.85] text-[var(--reader-text)] font-normal whitespace-pre-line">
-                <p className="text-xl sm:text-2xl font-serif italic text-[var(--accent)] pb-3 leading-relaxed border-l-2 border-[var(--accent)] pl-6 my-6">
-                  &ldquo;{activePost.excerpt}&rdquo;
-                </p>
-                {activePost.content}
-              </div>
-
-              <div className="pt-14 mt-14 border-t border-[var(--reader-border)] flex justify-between items-center text-xs text-[var(--muted)]">
-                <span className="font-serif text-[var(--accent)] text-sm">thetalkofthomas</span>
+            {/* 2. KHUNG CUỘN NỘI DUNG ĐỘC LẬP: Trượt mượt mà trên nền cố định */}
+            <div className="fixed inset-0 overflow-y-auto p-6 sm:p-12">
+              <div className="relative max-w-2xl mx-auto py-12 sm:py-16">
                 <button
                   onClick={() => setActivePost(null)}
-                  className="text-[var(--accent)] hover:underline cursor-pointer"
+                  className="text-xs text-[var(--muted)] hover:text-[var(--reader-title)] flex items-center gap-2 mb-12 transition-colors cursor-pointer group"
                 >
-                  Đóng bài viết &uarr;
+                  <span className="group-hover:-translate-x-0.5 transition-transform">&larr;</span>
+                  <span>Quay lại danh sách</span>
                 </button>
+
+                <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[var(--reader-title)] leading-[1.15] mb-4">
+                  {activePost.title}
+                </h1>
+
+                <div className="text-xs text-[var(--muted)] pb-6 mb-8 border-b border-[var(--reader-border)]">
+                  {formatDate(activePost.created_at)} · {activePost.category} · {activePost.read_time}
+                </div>
+
+                <div className="space-y-6 text-base sm:text-lg leading-[1.85] text-[var(--reader-text)] font-normal whitespace-pre-line">
+                  <p className="text-xl sm:text-2xl font-serif italic text-[var(--accent)] pb-3 leading-relaxed border-l-2 border-[var(--accent)] pl-6 my-6">
+                    &ldquo;{activePost.excerpt}&rdquo;
+                  </p>
+                  {activePost.content}
+                </div>
+
+                {/* CHÂN TRANG BÀI VIẾT: Đồng bộ phong cách Apple Garamond & Khoảng đệm thoáng đãng */}
+                <div className="pt-14 mt-16 pb-8 border-t border-[var(--reader-border)] flex justify-between items-center text-xs text-[var(--muted)]">
+                  <div className="flex items-center gap-2.5 font-garamond text-base sm:text-lg">
+                    <div className="w-5 h-5 rounded-[4px] bg-[var(--accent)] text-[var(--bg)] flex items-center justify-center font-garamond text-xs font-semibold select-none">
+                      T
+                    </div>
+                    <span className="text-[var(--reader-title)] font-medium">
+                      The Talk <span className="italic font-normal text-[var(--accent)]">of</span> Thomas
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setActivePost(null)}
+                    className="text-[var(--accent)] hover:underline cursor-pointer flex items-center gap-1.5 text-xs font-medium transition-colors py-1.5 px-3 rounded hover:bg-[var(--accent)]/10"
+                  >
+                    <span>Đóng bài viết</span>
+                    <span className="text-sm leading-none">&uarr;</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

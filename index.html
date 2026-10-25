@@ -288,33 +288,49 @@
     </section>
 
     <!-- ============================================================== -->
-    <!-- CHẾ ĐỘ ĐỌC BÀI VIẾT BIẾN THIÊN THEO MODE                       -->
+    <!-- CHẾ ĐỘ ĐỌC BÀI VIẾT: ĐỒNG BỘ THEO MODE & KHÔNG BỊ TRÔI NỀN KHI CUỘN -->
     <!-- ============================================================== -->
-    <div id="reader-view" class="fixed inset-0 z-50 reader-backdrop hidden overflow-y-auto p-6 sm:p-12 animate-in fade-in duration-300">
-      <!-- Lớp phủ Vignette biến thiên theo mode -->
-      <div class="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_35%,var(--reader-vignette-outer)_100%)]"></div>
+    <div id="reader-view" class="fixed inset-0 z-50 hidden animate-in fade-in duration-300">
+      <!-- 1. LỚP NỀN CỐ ĐỊNH (FIXED BACKDROP & VIGNETTE): Luôn bao trọn 100% màn hình -->
+      <div class="fixed inset-0 pointer-events-none reader-backdrop -z-10" aria-hidden="true">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,var(--reader-vignette-outer)_100%)]"></div>
+      </div>
 
-      <div class="relative max-w-2xl mx-auto py-10">
-        <button onclick="closeReader()" class="text-xs text-[var(--muted)] hover:text-[var(--reader-title)] flex items-center gap-2 mb-10 transition-colors cursor-pointer">
-          <span>&larr;</span>
-          <span>Quay lại</span>
-        </button>
+      <!-- 2. KHUNG CUỘN NỘI DUNG ĐỘC LẬP -->
+      <div class="fixed inset-0 overflow-y-auto p-6 sm:p-12">
+        <div class="relative max-w-2xl mx-auto py-12 sm:py-16">
+          <button onclick="closeReader()" class="text-xs text-[var(--muted)] hover:text-[var(--reader-title)] flex items-center gap-2 mb-12 transition-colors cursor-pointer group">
+            <span class="group-hover:-translate-x-0.5 transition-transform">&larr;</span>
+            <span>Quay lại</span>
+          </button>
 
-        <h1 class="font-serif text-3xl sm:text-5xl font-normal text-[var(--reader-title)] leading-[1.15] mb-4" id="reader-title">
-          Tiêu đề bài viết
-        </h1>
+          <h1 class="font-serif text-3xl sm:text-5xl font-normal text-[var(--reader-title)] leading-[1.15] mb-4" id="reader-title">
+            Tiêu đề bài viết
+          </h1>
 
-        <div class="text-xs text-[var(--muted)] pb-6 mb-8 border-b border-[var(--reader-border)]" id="reader-meta">
-          Thời gian đọc
-        </div>
+          <div class="text-xs text-[var(--muted)] pb-6 mb-8 border-b border-[var(--reader-border)]" id="reader-meta">
+            Thời gian đọc
+          </div>
 
-        <div class="space-y-6 text-base sm:text-lg leading-[1.85] text-[var(--reader-text)] font-normal" id="reader-body">
-          Nội dung bài viết
-        </div>
+          <div class="space-y-6 text-base sm:text-lg leading-[1.85] text-[var(--reader-text)] font-normal" id="reader-body">
+            Nội dung bài viết
+          </div>
 
-        <div class="pt-12 mt-12 border-t border-[var(--reader-border)] flex justify-between items-center text-xs text-[var(--muted)]">
-          <span class="font-serif text-[var(--accent)] text-sm">thetalkofthomas</span>
-          <button onclick="closeReader()" class="text-[var(--accent)] hover:underline cursor-pointer">Đóng bài viết &uarr;</button>
+          <!-- CHÂN TRANG BÀI VIẾT: Đồng bộ phong cách Apple Garamond -->
+          <div class="pt-14 mt-16 pb-8 border-t border-[var(--reader-border)] flex justify-between items-center text-xs text-[var(--muted)]">
+            <div class="flex items-center gap-2.5 font-serif text-base sm:text-lg">
+              <div class="w-5 h-5 rounded-[4px] bg-[var(--accent)] text-[var(--bg)] flex items-center justify-center font-serif text-xs font-semibold select-none">
+                T
+              </div>
+              <span class="text-[var(--reader-title)] font-medium">
+                The Talk <span class="italic font-normal text-[var(--accent)]">of</span> Thomas
+              </span>
+            </div>
+            <button onclick="closeReader()" class="text-[var(--accent)] hover:underline cursor-pointer flex items-center gap-1.5 text-xs font-medium transition-colors py-1.5 px-3 rounded hover:bg-[var(--accent)]/10">
+              <span>Đóng bài viết</span>
+              <span class="text-sm leading-none">&uarr;</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
