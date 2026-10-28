@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Post } from "@/types/database";
+import ArticleBody from "@/components/ArticleBody";
+import CommentSection from "@/components/CommentSection";
 
 const DEFAULT_POSTS: Post[] = [
   {
@@ -255,26 +257,45 @@ export default function HomePage() {
             <div className="md:col-span-9 divide-y border-subtle">
               {filteredPosts.map((post) => (
                 <article key={post.id} className="py-8 first:pt-0 group">
-                  <div className="text-xs text-[var(--muted)] mb-2">
-                    {formatDate(post.created_at)} · {post.category} · {post.read_time}
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
+                    <div className="flex-1">
+                      <div className="text-xs text-[var(--muted)] mb-2">
+                        {formatDate(post.created_at)} · {post.category} · {post.read_time}
+                      </div>
+                      <h3 className="font-serif text-2xl sm:text-3xl font-normal text-[var(--text)] group-hover:text-[var(--accent)] transition-colors mb-3 leading-snug">
+                        <button
+                          onClick={() => setActivePost(post)}
+                          className="text-left hover:underline cursor-pointer"
+                        >
+                          {post.title}
+                        </button>
+                      </h3>
+                      <p className="text-[var(--muted)] text-base font-normal leading-relaxed mb-4">
+                        {post.excerpt}
+                      </p>
+                      <button
+                        onClick={() => setActivePost(post)}
+                        className="text-sm font-medium text-[var(--accent)] hover:underline inline-flex items-center gap-1 cursor-pointer"
+                      >
+                        Đọc tiếp &rarr;
+                      </button>
+                    </div>
+
+                    {post.cover_image && (
+                      <div
+                        onClick={() => setActivePost(post)}
+                        className="sm:w-52 h-36 flex-shrink-0 rounded-lg overflow-hidden border border-subtle bg-[var(--card-bg)] cursor-pointer order-first sm:order-last group-hover:border-[var(--accent)]/50 transition-colors shadow-sm"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={post.cover_image}
+                          alt={post.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
                   </div>
-                  <h3 className="font-serif text-2xl sm:text-3xl font-normal text-[var(--text)] group-hover:text-[var(--accent)] transition-colors mb-3 leading-snug">
-                    <button
-                      onClick={() => setActivePost(post)}
-                      className="text-left hover:underline cursor-pointer"
-                    >
-                      {post.title}
-                    </button>
-                  </h3>
-                  <p className="text-[var(--muted)] text-base font-normal leading-relaxed mb-4">
-                    {post.excerpt}
-                  </p>
-                  <button
-                    onClick={() => setActivePost(post)}
-                    className="text-sm font-medium text-[var(--accent)] hover:underline inline-flex items-center gap-1 cursor-pointer"
-                  >
-                    Đọc tiếp &rarr;
-                  </button>
                 </article>
               ))}
 
@@ -363,12 +384,27 @@ export default function HomePage() {
                   {formatDate(activePost.created_at)} · {activePost.category} · {activePost.read_time}
                 </div>
 
-                <div className="space-y-6 text-base sm:text-lg leading-[1.85] text-[var(--reader-text)] font-normal whitespace-pre-line">
+                {/* ẢNH BÌA HERO (nếu có) */}
+                {activePost.cover_image && (
+                  <div className="mb-10 rounded-xl overflow-hidden border border-[var(--reader-border)] bg-[var(--bg)] shadow-sm">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={activePost.cover_image}
+                      alt={activePost.title}
+                      className="w-full object-cover max-h-[500px]"
+                    />
+                  </div>
+                )}
+
+                <div className="space-y-6 text-base sm:text-lg leading-[1.85] text-[var(--reader-text)] font-normal">
                   <p className="text-xl sm:text-2xl font-serif italic text-[var(--accent)] pb-3 leading-relaxed border-l-2 border-[var(--accent)] pl-6 my-6">
                     &ldquo;{activePost.excerpt}&rdquo;
                   </p>
-                  {activePost.content}
+                  <ArticleBody content={activePost.content} />
                 </div>
+
+                {/* BÌNH LUẬN BÀI VIẾT (COMMENTS) */}
+                <CommentSection postId={activePost.id} />
 
                 {/* CHÂN TRANG BÀI VIẾT: Đồng bộ phong cách Apple Garamond & Khoảng đệm thoáng đãng */}
                 <div className="pt-14 mt-16 pb-8 border-t border-[var(--reader-border)] flex justify-between items-center text-xs text-[var(--muted)]">

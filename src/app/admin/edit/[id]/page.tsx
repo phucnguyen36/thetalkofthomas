@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Post } from "@/types/database";
+import { CoverImagePicker, ContentImageToolbar } from "@/components/ImageToolbar";
 
 export default function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   const [slug, setSlug] = useState("");
   const [category, setCategory] = useState("Chiến lược");
   const [readTime, setReadTime] = useState("5 phút đọc");
+  const [coverImage, setCoverImage] = useState("");
   const [excerpt, setExcerpt] = useState("");
   const [content, setContent] = useState("");
   const [published, setPublished] = useState(false);
@@ -36,6 +38,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
             setSlug(found.slug);
             setCategory(found.category);
             setReadTime(found.read_time);
+            setCoverImage(found.cover_image || "");
             setExcerpt(found.excerpt);
             setContent(found.content);
             setPublished(found.published);
@@ -67,6 +70,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
           slug,
           category,
           read_time: readTime,
+          cover_image: coverImage || undefined,
           excerpt,
           content,
           published,
@@ -177,6 +181,9 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
             </div>
           </div>
 
+          {/* Cover Image */}
+          <CoverImagePicker value={coverImage} onChange={setCoverImage} />
+
           {/* Excerpt */}
           <div>
             <label className="block text-xs text-[var(--muted)] mb-1.5 font-medium">
@@ -193,14 +200,20 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
 
           {/* Content */}
           <div>
-            <label className="block text-xs text-[var(--muted)] mb-1.5 font-medium">
-              Nội dung toàn văn
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs text-[var(--muted)] font-medium">
+                Nội dung toàn văn
+              </label>
+              <ContentImageToolbar
+                onInsertImage={(snippet) => setContent((prev) => prev + snippet)}
+              />
+            </div>
             <textarea
               required
               rows={14}
               value={content}
               onChange={(e) => setContent(e.target.value)}
+              placeholder="Viết nội dung bài viết ở đây... Bạn có thể dùng Markdown hoặc bấm nút chèn ảnh phía trên."
               className="w-full px-4 py-3 rounded border border-subtle bg-transparent text-base text-[var(--text)] leading-relaxed focus:outline-none focus:border-[var(--accent)] transition-colors"
             />
           </div>

@@ -53,7 +53,16 @@ export async function GET() {
         .order("created_at", { ascending: false });
 
       if (!error && Array.isArray(data)) {
-        return NextResponse.json(data);
+        // Hợp nhất cover_image từ file local dự phòng nếu database Supabase chưa bổ sung cột này
+        const localPosts = getLocalPosts();
+        const merged = data.map((sp) => {
+          const lp = localPosts.find((p) => p.id === sp.id || p.slug === sp.slug);
+          return {
+            ...sp,
+            cover_image: sp.cover_image || lp?.cover_image,
+          };
+        });
+        return NextResponse.json(merged);
       }
     }
   } catch {
@@ -95,6 +104,7 @@ export async function POST(request: Request) {
       content: postData.content,
       read_time: postData.read_time || "5 phút đọc",
       published: postData.published ?? true,
+      cover_image: postData.cover_image || undefined,
     };
 
     // 1. Lưu vào file JSON trên server
@@ -121,7 +131,14 @@ export async function POST(request: Request) {
             setAll() {},
           },
         });
-        const { error } = await supabase.from("posts").upsert(newPost);
+        let { error } = await supabase.from("posts").upsert(newPost);
+        if (error && (error.code === "42703" || error.message?.includes("cover_image")) && newPost.cover_image) {
+          // Nếu cột cover_image chưa được tạo trên Supabase, lưu tạm không kèm cột này
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { cover_image, ...postWithoutCover } = newPost;
+          const retry = await supabase.from("posts").upsert(postWithoutCover);
+          error = retry.error;
+        }
         if (error) {
           console.error("Supabase insert error:", error);
           return NextResponse.json(

@@ -9,4 +9,14 @@ export interface Post {
   content: string;
   read_time: string;
   published: boolean;
+  cover_image?: string;
+}
+
+export interface Comment {
+  id: string;
+  post_id: string;
+  author_name: string;
+  author_email?: string;
+  content: string;
+  created_at: string;
 }

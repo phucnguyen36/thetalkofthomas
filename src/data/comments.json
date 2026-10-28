@@ -1,0 +1,18 @@
+[
+  {
+    "id": "7d8902af-fb05-48d9-b6b0-26ea7bcef395",
+    "post_id": "54378e71-92e1-4ecb-9e4f-99527789f680",
+    "author_name": "Độc giả Thomas",
+    "author_email": "reader@example.com",
+    "content": "Một bài viết rất chân thật và ý nghĩa. Chúc bạn luôn kiên định!",
+    "created_at": "2026-10-28T07:25:20.610Z"
+  },
+  {
+    "id": "e02b16ff-6f51-4ee2-88a0-b3606aaf8815",
+    "post_id": "54378e71-92e1-4ecb-9e4f-99527789f680",
+    "author_name": "Minh Anh",
+    "author_email": "minhanh@gmail.com",
+    "content": "Rất đồng cảm với tác giả về việc thiền và rèn luyện kỷ luật bản thân!",
+    "created_at": "2026-10-28T07:27:51.668Z"
+  }
+]

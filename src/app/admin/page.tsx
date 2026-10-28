@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { Post } from "@/types/database";
+import { Post, Comment } from "@/types/database";
 
 const DEFAULT_POSTS: Post[] = [
   {
@@ -60,6 +60,7 @@ const DEFAULT_POSTS: Post[] = [
 export default function AdminDashboardPage() {
   const router = useRouter();
   const [posts, setPosts] = useState<Post[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string>("");
 
@@ -98,15 +99,25 @@ export default function AdminDashboardPage() {
           const data: Post[] = await res.json();
           if (Array.isArray(data)) {
             setPosts(data);
-            setLoading(false);
-            return;
           }
         }
       } catch {
         // fallback
       }
 
-      setPosts([]);
+      // 3. Tải danh sách bình luận
+      try {
+        const resComm = await fetch("/api/comments");
+        if (resComm.ok) {
+          const commData: Comment[] = await resComm.json();
+          if (Array.isArray(commData)) {
+            setComments(commData);
+          }
+        }
+      } catch {
+        // fallback
+      }
+
       setLoading(false);
     }
 
@@ -172,6 +183,25 @@ export default function AdminDashboardPage() {
       setPosts(updated);
     } catch {
       alert("Đã xảy ra lỗi kết nối khi xóa bài viết.");
+    }
+  };
+
+  const handleDeleteComment = async (id: string, author: string) => {
+    if (!confirm(`Bạn có chắc muốn xóa bình luận của "${author}"?`)) return;
+
+    try {
+      const res = await fetch(`/api/comments?id=${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        alert("Không thể xóa bình luận.");
+        return;
+      }
+
+      setComments((prev) => prev.filter((c) => c.id !== id));
+    } catch {
+      alert("Đã xảy ra lỗi kết nối khi xóa bình luận.");
     }
   };
 
@@ -246,36 +276,48 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* POSTS LIST */}
-        <div className="border border-subtle rounded-lg divide-y border-subtle overflow-hidden">
+        <div className="border border-subtle rounded-lg divide-y border-subtle overflow-hidden mb-14">
           {posts.map((post) => (
             <div
               key={post.id}
               className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[var(--card-bg)] transition-colors"
             >
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`text-[10px] font-medium px-2 py-0.5 rounded ${
-                      post.published
-                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
-                        : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
-                    }`}
-                  >
-                    {post.published ? "Đã xuất bản" : "Bản nháp"}
-                  </span>
-                  <span className="text-xs text-[var(--muted)]">
-                    {post.category} · {post.read_time}
-                  </span>
+              <div className="flex items-start gap-4">
+                {post.cover_image && (
+                  <div className="w-16 h-12 rounded overflow-hidden border border-subtle flex-shrink-0 bg-[var(--bg)] mt-0.5">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={post.cover_image}
+                      alt={post.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`text-[10px] font-medium px-2 py-0.5 rounded ${
+                        post.published
+                          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                          : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                      }`}
+                    >
+                      {post.published ? "Đã xuất bản" : "Bản nháp"}
+                    </span>
+                    <span className="text-xs text-[var(--muted)]">
+                      {post.category} · {post.read_time}
+                    </span>
+                  </div>
+                  <h3 className="font-serif text-xl font-normal text-[var(--text)]">
+                    {post.title}
+                  </h3>
+                  <p className="text-xs text-[var(--muted)] line-clamp-1 max-w-xl">
+                    {post.excerpt}
+                  </p>
                 </div>
-                <h3 className="font-serif text-xl font-normal text-[var(--text)]">
-                  {post.title}
-                </h3>
-                <p className="text-xs text-[var(--muted)] line-clamp-1 max-w-xl">
-                  {post.excerpt}
-                </p>
               </div>
 
-              <div className="flex items-center gap-3 text-xs pt-2 sm:pt-0 border-t sm:border-t-0 border-subtle">
+              <div className="flex items-center gap-3 text-xs pt-2 sm:pt-0 border-t sm:border-t-0 border-subtle flex-shrink-0">
                 <button
                   onClick={() => handleTogglePublish(post)}
                   className="px-2.5 py-1 rounded border border-subtle text-[var(--muted)] hover:text-[var(--text)] transition-colors"
@@ -303,6 +345,72 @@ export default function AdminDashboardPage() {
               Chưa có bài viết nào. Hãy tạo bài viết đầu tiên của bạn!
             </div>
           )}
+        </div>
+
+        {/* COMMENTS MODERATION */}
+        <div>
+          <div className="mb-4">
+            <h2 className="font-serif text-2xl font-normal text-[var(--text)] mb-1">
+              Bình luận gần đây ({comments.length})
+            </h2>
+            <p className="text-xs text-[var(--muted)]">
+              Xem và kiểm duyệt các phản hồi của độc giả trên toàn bộ blog.
+            </p>
+          </div>
+
+          <div className="border border-subtle rounded-lg divide-y border-subtle overflow-hidden">
+            {comments.map((comment) => {
+              const matchedPost = posts.find((p) => p.id === comment.post_id);
+              return (
+                <div
+                  key={comment.id}
+                  className="p-5 flex flex-col sm:flex-row sm:items-start justify-between gap-4 hover:bg-[var(--card-bg)] transition-colors"
+                >
+                  <div className="space-y-1.5 flex-1">
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="font-medium text-[var(--text)]">
+                        {comment.author_name}
+                      </span>
+                      {comment.author_email && (
+                        <span className="text-[var(--muted)]">({comment.author_email})</span>
+                      )}
+                      <span className="text-[var(--muted)]">·</span>
+                      <span className="text-[11px] text-[var(--muted)]">
+                        {new Date(comment.created_at).toLocaleDateString("vi-VN", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
+
+                    <div className="text-xs text-[var(--accent)] font-serif">
+                      Bài viết: {matchedPost ? matchedPost.title : "ID " + comment.post_id}
+                    </div>
+
+                    <p className="text-sm text-[var(--text)] leading-relaxed whitespace-pre-line pt-1">
+                      {comment.content}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => handleDeleteComment(comment.id, comment.author_name)}
+                    className="px-2.5 py-1 rounded border border-red-500/20 text-red-500 hover:bg-red-500/10 text-xs transition-colors self-start sm:self-center"
+                  >
+                    Xóa bình luận
+                  </button>
+                </div>
+              );
+            })}
+
+            {comments.length === 0 && (
+              <div className="p-8 text-center text-xs text-[var(--muted)]">
+                Chưa có bình luận nào trên blog.
+              </div>
+            )}
+          </div>
         </div>
       </main>
 

@@ -13,71 +13,60 @@ CREATE TABLE IF NOT EXISTS public.posts (
     excerpt TEXT NOT NULL,
     content TEXT NOT NULL,
     read_time TEXT DEFAULT '5 phút đọc',
-    published BOOLEAN DEFAULT false
+    published BOOLEAN DEFAULT false,
+    cover_image TEXT
 );
 
--- 2. TẮT BẢO MẬT RLS ĐỂ CHO PHÉP THÊM, SỬA, XÓA TRỰC TIẾP TỪ SERVER API
+-- Bổ sung cột cover_image nếu bảng posts đã tồn tại từ trước
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS cover_image TEXT;
+
+-- Tắt bảo mật RLS cho posts để cho phép thêm, sửa, xóa trực tiếp từ Server API
 ALTER TABLE public.posts DISABLE ROW LEVEL SECURITY;
 
--- 4. DỌN DẸP DỮ LIỆU CŨ BỊ TRÙNG LẶP (NẾU BẠN TỪNG CHẠY SCRIPT NHIỀU LẦN)
--- Script này sẽ xóa các bản ghi cũ có cùng slug để chỉ giữ lại bản ghi chuẩn duy nhất
-DELETE FROM public.posts 
-WHERE slug IN (
-  've-su-im-lang-trong-nhung-cuoc-dam-phan-quan-trong',
-  'nguyen-tac-ra-quyet-dinh-khi-khong-co-du-du-lieu',
-  'ky-luat-tu-than-trong-moi-truong-qua-tai-thong-tin',
-  'ghi-chep-ve-cach-xay-dung-vi-the-doc-lap'
+
+-- 2. BẢNG BÌNH LUẬN (COMMENTS)
+CREATE TABLE IF NOT EXISTS public.comments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    post_id UUID NOT NULL REFERENCES public.posts(id) ON DELETE CASCADE,
+    author_name TEXT NOT NULL,
+    author_email TEXT,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 5. CHÈN DỮ LIỆU CHUẨN VỚI UUID CỐ ĐỊNH (TRÙNG KHỚP 100% VỚI CODE LOCAL)
-INSERT INTO public.posts (id, title, slug, category, excerpt, content, read_time, published)
-VALUES 
-(
-  '00000000-0000-0000-0000-000000000001',
-  'Về sự im lặng trong những cuộc đàm phán quan trọng',
-  've-su-im-lang-trong-nhung-cuoc-dam-phan-quan-trong',
-  'Chiến lược',
-  'Trong phần lớn các cuộc trò chuyện căng thẳng, người lên tiếng đầu tiên thường là người bộc lộ nhiều điểm yếu nhất. Sự im lặng không đồng nghĩa với bối rối hay nhượng bộ — nó là khoảng dừng cần thiết để quan sát toàn bộ bàn cờ.',
-  'Trong công việc và kinh doanh, chúng ta rất dễ bị cuốn vào ảo tưởng rằng kẻ nói nhiều nhất, to tiếng nhất là kẻ nắm quyền kiểm soát. Nhưng thực tế thường chứng minh điều ngược lại.\n\nKhi bạn chủ động giữ sự tĩnh lặng, bạn buộc đối phương phải lấp đầy khoảng trống đó bằng lời nói của chính họ. Đó là lúc những sơ hở, sự bất an và mục đích thật sự bắt đầu lộ diện.\n\nKỷ luật không phải là sự gò bó ép buộc, mà là sự tự do tối cao: tự do khỏi những phản ứng bộc phát thiếu suy nghĩ, và khả năng chỉ hành động khi thời điểm thực sự chín muồi.',
-  '5 phút đọc',
-  true
-),
-(
-  '00000000-0000-0000-0000-000000000002',
-  'Nguyên tắc ra quyết định khi không có đủ dữ liệu',
-  'nguyen-tac-ra-quyet-dinh-khi-khong-co-du-du-lieu',
-  'Tư duy',
-  'Chờ đợi cho đến khi có 100% dữ liệu đồng nghĩa với việc bạn đã bỏ lỡ thời cơ. Những quyết định bước ngoặt trong sự nghiệp luôn đòi hỏi bạn phải chấp nhận rủi ro có tính toán.',
-  'Sự tê liệt do phân tích quá mức là cái bẫy lớn nhất của trí thức. Cách xây dựng trực giác có căn cứ và chấp nhận rủi ro có tính toán khi thời khắc đến.\n\nNgười lãnh đạo giỏi không phải là người không bao giờ phạm sai lầm, mà là người biết cách đưa ra quyết định dứt khoát trong điều kiện mập mờ và chịu trách nhiệm đến cùng.',
-  '4 phút đọc',
-  true
-),
-(
-  '00000000-0000-0000-0000-000000000003',
-  'Kỷ luật tự thân trong môi trường quá tải thông tin',
-  'ky-luat-tu-than-trong-moi-truong-qua-tai-thong-tin',
-  'Tư duy',
-  'Mỗi ngày có hàng trăm thông báo cố gắng giành lấy sự chú ý của bạn. Khả năng nói không với những kích thích tầm thường là điều kiện tiên quyết để tạo ra kết quả có giá trị.',
-  'Não bộ con người không được tạo ra để tiếp nhận hàng ngàn kích thích rẻ tiền mỗi ngày. Khả năng nói không là thứ vũ khí quyền năng nhất.\n\nHãy dựng lên một pháo đài tinh thần để bảo vệ năng lượng cho những mục tiêu thật sự dài hạn.',
-  '6 phút đọc',
-  true
-),
-(
-  '00000000-0000-0000-0000-000000000004',
-  'Ghi chép về cách xây dựng vị thế độc lập',
-  'ghi-chep-ve-cach-xay-dung-vi-the-doc-lap',
-  'Ghi chép',
-  'Sự độc lập không đến từ việc đối đầu với mọi người, mà đến từ việc xây dựng năng lực chuyên môn hiếm hoi và tự chủ về tư duy lẫn tài chính.',
-  'Độc lập không có nghĩa là đối đầu với tất cả. Độc lập là làm chủ được thời gian, kỹ năng cốt lõi và không bị phụ thuộc vào sự chấp thuận của người khác.',
-  '7 phút đọc',
-  true
-)
-ON CONFLICT (slug) DO UPDATE 
-SET 
-  id = EXCLUDED.id,
-  title = EXCLUDED.title,
-  category = EXCLUDED.category,
-  excerpt = EXCLUDED.excerpt,
-  content = EXCLUDED.content,
-  read_time = EXCLUDED.read_time,
-  published = EXCLUDED.published;
+-- Tạo Index để tăng tốc truy vấn bình luận theo bài viết
+CREATE INDEX IF NOT EXISTS idx_comments_post_id ON public.comments(post_id);
+
+-- Tắt bảo mật RLS cho comments để độc giả gửi và đọc bình luận
+ALTER TABLE public.comments DISABLE ROW LEVEL SECURITY;
+
+
+-- 3. STORAGE BUCKET CHO ẢNH BÀI VIẾT (TÙY CHỌN - BLOG-IMAGES)
+-- Cho phép lưu trữ và đọc ảnh công khai
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('blog-images', 'blog-images', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Cho phép mọi người đọc ảnh công khai
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND policyname = 'Public Access for blog-images'
+    ) THEN
+        CREATE POLICY "Public Access for blog-images"
+        ON storage.objects FOR SELECT
+        USING (bucket_id = 'blog-images');
+    END IF;
+END $$;
+
+-- Cho phép upload ảnh vào bucket blog-images
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND policyname = 'Allow Upload to blog-images'
+    ) THEN
+        CREATE POLICY "Allow Upload to blog-images"
+        ON storage.objects FOR INSERT
+        WITH CHECK (bucket_id = 'blog-images');
+    END IF;
+END $$;
