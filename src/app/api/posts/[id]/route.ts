@@ -123,6 +123,15 @@ export async function PUT(
         }
         if (error) {
           console.error("Supabase upsert error:", error);
+          if (error.code === "42501" || error.message?.includes("row-level security")) {
+            return NextResponse.json(
+              {
+                error:
+                  "Supabase đang chặn lưu do bảo mật RLS. Vui lòng vào Supabase SQL Editor chạy: ALTER TABLE public.posts DISABLE ROW LEVEL SECURITY;",
+              },
+              { status: 500 }
+            );
+          }
           return NextResponse.json(
             { error: "Lỗi cập nhật Supabase: " + error.message },
             { status: 500 }
