@@ -7,11 +7,25 @@ import { createServerClient } from "@supabase/ssr";
 
 const dataFilePath = path.join(process.cwd(), "src", "data", "posts.json");
 
+const MOCK_SLUGS = [
+  "ve-su-im-lang-trong-nhung-cuoc-dam-phan-quan-trong",
+  "nguyen-tac-ra-quyet-dinh-khi-khong-co-du-du-lieu",
+  "ky-luat-tu-than-trong-moi-truong-qua-tai-thong-tin",
+  "ghi-chep-ve-cach-xay-dung-vi-the-doc-lap",
+];
+
+function isMockPost(p: { id?: string; slug?: string }) {
+  if (p.id && p.id.startsWith("00000000-0000-0000")) return true;
+  if (p.slug && MOCK_SLUGS.includes(p.slug)) return true;
+  return false;
+}
+
 function getLocalPosts(): Post[] {
   try {
     if (fs.existsSync(dataFilePath)) {
       const fileData = fs.readFileSync(dataFilePath, "utf8");
-      return JSON.parse(fileData);
+      const list: Post[] = JSON.parse(fileData);
+      return list.filter((p) => !isMockPost(p));
     }
   } catch {
     // ignore
@@ -53,9 +67,10 @@ export async function GET() {
         .order("created_at", { ascending: false });
 
       if (!error && Array.isArray(data)) {
-        // Hợp nhất cover_image từ file local dự phòng nếu database Supabase chưa bổ sung cột này
+        // Loại bỏ hoàn toàn các bài mẫu cũ (mock posts) nếu còn sót trong Supabase
+        const realData = data.filter((p) => !isMockPost(p));
         const localPosts = getLocalPosts();
-        const merged = data.map((sp) => {
+        const merged = realData.map((sp) => {
           const lp = localPosts.find((p) => p.id === sp.id || p.slug === sp.slug);
           return {
             ...sp,

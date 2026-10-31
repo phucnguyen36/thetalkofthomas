@@ -20,11 +20,32 @@ CREATE TABLE IF NOT EXISTS public.posts (
 -- Bổ sung cột cover_image nếu bảng posts đã tồn tại từ trước
 ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS cover_image TEXT;
 
--- Tắt bảo mật RLS cho posts để cho phép thêm, sửa, xóa trực tiếp từ Server API
+-- 2. XÓA VĨNH VIỄN 4 BÀI VIẾT MẪU CŨ KHÔNG LIÊN QUAN
+DELETE FROM public.posts 
+WHERE id IN (
+  '00000000-0000-0000-0000-000000000001',
+  '00000000-0000-0000-0000-000000000002',
+  '00000000-0000-0000-0000-000000000003',
+  '00000000-0000-0000-0000-000000000004'
+) OR slug IN (
+  've-su-im-lang-trong-nhung-cuoc-dam-phan-quan-trong',
+  'nguyen-tac-ra-quyet-dinh-khi-khong-co-du-du-lieu',
+  'ky-luat-tu-than-trong-moi-truong-qua-tai-thong-tin',
+  'ghi-chep-ve-cach-xay-dung-vi-the-doc-lap'
+);
+
+-- 3. TẮT BẢO MẬT RLS ĐỂ CHO PHÉP THÊM, SỬA, XÓA TỪ GIAO DIỆN WEB
 ALTER TABLE public.posts DISABLE ROW LEVEL SECURITY;
 
+-- Tạo chính sách dự phòng (nếu Supabase vô tình bật lại RLS thì vẫn không bị chặn)
+DO $$
+BEGIN
+    DROP POLICY IF EXISTS "Allow all for posts" ON public.posts;
+    CREATE POLICY "Allow all for posts" ON public.posts FOR ALL USING (true) WITH CHECK (true);
+END $$;
 
--- 2. BẢNG BÌNH LUẬN (COMMENTS)
+
+-- 4. BẢNG BÌNH LUẬN (COMMENTS)
 CREATE TABLE IF NOT EXISTS public.comments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     post_id UUID NOT NULL REFERENCES public.posts(id) ON DELETE CASCADE,
@@ -37,17 +58,21 @@ CREATE TABLE IF NOT EXISTS public.comments (
 -- Tạo Index để tăng tốc truy vấn bình luận theo bài viết
 CREATE INDEX IF NOT EXISTS idx_comments_post_id ON public.comments(post_id);
 
--- Tắt bảo mật RLS cho comments để độc giả gửi và đọc bình luận
+-- Tắt bảo mật RLS cho comments
 ALTER TABLE public.comments DISABLE ROW LEVEL SECURITY;
 
+DO $$
+BEGIN
+    DROP POLICY IF EXISTS "Allow all for comments" ON public.comments;
+    CREATE POLICY "Allow all for comments" ON public.comments FOR ALL USING (true) WITH CHECK (true);
+END $$;
 
--- 3. STORAGE BUCKET CHO ẢNH BÀI VIẾT (TÙY CHỌN - BLOG-IMAGES)
--- Cho phép lưu trữ và đọc ảnh công khai
+
+-- 5. STORAGE BUCKET CHO ẢNH BÀI VIẾT (TÙY CHỌN - BLOG-IMAGES)
 INSERT INTO storage.buckets (id, name, public) 
 VALUES ('blog-images', 'blog-images', true)
 ON CONFLICT (id) DO NOTHING;
 
--- Cho phép mọi người đọc ảnh công khai
 DO $$
 BEGIN
     IF NOT EXISTS (
@@ -59,7 +84,6 @@ BEGIN
     END IF;
 END $$;
 
--- Cho phép upload ảnh vào bucket blog-images
 DO $$
 BEGIN
     IF NOT EXISTS (
