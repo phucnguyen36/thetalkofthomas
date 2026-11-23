@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import { Post } from "@/types/database";
 import { createServerClient } from "@supabase/ssr";
+import { isAdminRequest } from "@/lib/admin-auth";
 
 const dataFilePath = path.join(process.cwd(), "src", "data", "posts.json");
 
@@ -33,7 +34,7 @@ export async function PUT(
 ) {
   try {
     const cookieStore = await cookies();
-    const isAdmin = cookieStore.get("thomas_admin");
+    const isAdmin = isAdminRequest(cookieStore);
 
     if (!isAdmin) {
       return NextResponse.json(
@@ -157,7 +158,7 @@ export async function DELETE(
 ) {
   try {
     const cookieStore = await cookies();
-    const isAdmin = cookieStore.get("thomas_admin");
+    const isAdmin = isAdminRequest(cookieStore);
 
     if (!isAdmin) {
       return NextResponse.json(

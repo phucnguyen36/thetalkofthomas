@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
+import {
+  ADMIN_COOKIE_NAME,
+  SESSION_MAX_AGE_SECONDS,
+  createAdminSessionToken,
+  safeEqual,
+} from "@/lib/admin-auth";
 
 export async function POST(request: Request) {
   try {
@@ -17,34 +23,38 @@ export async function POST(request: Request) {
     const cleanEmail = String(email).trim().toLowerCase();
     const cleanPassword = String(password).trim();
 
-    // 1. Kiểm tra với tài khoản Admin được bảo mật trên Server
-    const serverAdminEmail = (
-      process.env.ADMIN_EMAIL || "work.xuanphuc@gmail.com"
-    )
-      .trim()
-      .toLowerCase();
-    const serverAdminPassword = (
-      process.env.ADMIN_PASSWORD || "toantin1"
-    ).trim();
+    // 1. Kiểm tra với tài khoản Admin cấu hình qua biến môi trường trên Server
+    const serverAdminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+    const serverAdminPassword = process.env.ADMIN_PASSWORD?.trim();
 
-    const isServerMatch =
-      cleanEmail === serverAdminEmail &&
-      cleanPassword === serverAdminPassword;
+    if (serverAdminEmail && serverAdminPassword) {
+      const isServerMatch =
+        safeEqual(cleanEmail, serverAdminEmail) &&
+        safeEqual(cleanPassword, serverAdminPassword);
 
-    if (isServerMatch) {
-      const cookieStore = await cookies();
-      cookieStore.set("thomas_admin", "1", {
-        path: "/",
-        httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      });
+      if (isServerMatch) {
+        const sessionToken = createAdminSessionToken(cleanEmail);
+        if (!sessionToken) {
+          return NextResponse.json(
+            { error: "Chưa cấu hình khóa bảo mật phiên đăng nhập trên server." },
+            { status: 500 }
+          );
+        }
 
-      return NextResponse.json({
-        success: true,
-        email: cleanEmail,
-      });
+        const cookieStore = await cookies();
+        cookieStore.set(ADMIN_COOKIE_NAME, sessionToken, {
+          path: "/",
+          httpOnly: true,
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+          maxAge: SESSION_MAX_AGE_SECONDS,
+        });
+
+        return NextResponse.json({
+          success: true,
+          email: cleanEmail,
+        });
+      }
     }
 
     // 2. Thử xác thực qua Supabase nếu có cấu hình
@@ -80,19 +90,38 @@ export async function POST(request: Request) {
       });
 
       if (!error && data.user) {
-        cookieStore.set("thomas_admin", "1", {
+        const userEmail = data.user.email || cleanEmail;
+        const sessionToken = createAdminSessionToken(userEmail);
+        if (!sessionToken) {
+          return NextResponse.json(
+            { error: "Chưa cấu hình SESSION_SECRET trên server." },
+            { status: 500 }
+          );
+        }
+
+        cookieStore.set(ADMIN_COOKIE_NAME, sessionToken, {
           path: "/",
           httpOnly: true,
           sameSite: "lax",
           secure: process.env.NODE_ENV === "production",
-          maxAge: 60 * 60 * 24 * 7,
+          maxAge: SESSION_MAX_AGE_SECONDS,
         });
 
         return NextResponse.json({
           success: true,
-          email: data.user.email || cleanEmail,
+          email: userEmail,
         });
       }
+    }
+
+    if (!serverAdminEmail || !serverAdminPassword) {
+      return NextResponse.json(
+        {
+          error:
+            "Chưa cấu hình ADMIN_EMAIL và ADMIN_PASSWORD trong biến môi trường server.",
+        },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json(

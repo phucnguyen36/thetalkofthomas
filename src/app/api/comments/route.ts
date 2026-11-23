@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import { Comment } from "@/types/database";
 import { createServerClient } from "@supabase/ssr";
+import { isAdminRequest } from "@/lib/admin-auth";
 
 const commentsFilePath = path.join(process.cwd(), "src", "data", "comments.json");
 
@@ -146,7 +147,7 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const cookieStore = await cookies();
-    const isAdmin = cookieStore.get("thomas_admin");
+    const isAdmin = isAdminRequest(cookieStore);
 
     if (!isAdmin) {
       return NextResponse.json(

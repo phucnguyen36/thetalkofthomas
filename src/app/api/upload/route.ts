@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
+import { isAdminRequest } from "@/lib/admin-auth";
 
 export async function POST(request: Request) {
   try {
     const cookieStore = await cookies();
-    const isAdmin = cookieStore.get("thomas_admin");
+    const isAdmin = isAdminRequest(cookieStore);
 
     if (!isAdmin) {
       return NextResponse.json(
